@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  php:
+    image: ucc_php_8.2
+    container_name: php
+    user:  ucc:ucc
+    working_dir: /home/ucc/app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/home/ucc/app
+    links:
+      - mysql
+    depends_on:
+      - mysql
+  nginx:
+    image: nginx:1.23
+    container_name: nginx
+    ports: 
+     - "80:80"
+     - "443:443"
+    volumes:
+    - ./app:/home/ucc/app
+    - ./nginx:/etc/nginx/conf.d
+    - ./log/nginx:/var/log/nginx
+  mysql: 
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+    env_file: ./.env
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server --port 6379
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
+
+
