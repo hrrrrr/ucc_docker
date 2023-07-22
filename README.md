@@ -1,1 +1,0 @@
-# ucc_docker
